@@ -15,8 +15,8 @@
 
 @interface MASConstraintMaker () <MASConstraintDelegate>
 
-@property (nonatomic, weak) MAS_VIEW *view;
-@property (nonatomic, strong) NSMutableArray *constraints;
+@property (nonatomic, weak) MAS_VIEW *view;                 //要添加约束的视图
+@property (nonatomic, strong) NSMutableArray *constraints;  //存储添加到View上的约束
 
 @end
 
@@ -32,17 +32,27 @@
     return self;
 }
 
+//往View上Install约束
 - (NSArray *)install {
+    
+    //如果是mas_remakeConstraint, 要先将该视图上的约束先uninstall
     if (self.removeExisting) {
+        
+        //获取当前视图上添加的所有约束（NSArray<MSAConstraint>）
         NSArray *installedConstraints = [MASViewConstraint installedConstraintsForView:self.view];
+        
+        //移除掉所有约束
         for (MASConstraint *constraint in installedConstraints) {
             [constraint uninstall];
         }
     }
+    
+    //添加约束
+    //self.constraints中存储的是通过Block中配置的参数
     NSArray *constraints = self.constraints.copy;
     for (MASConstraint *constraint in constraints) {
-        constraint.updateExisting = self.updateExisting;
-        [constraint install];
+        constraint.updateExisting = self.updateExisting;        //updateExisting默认是NO
+        [constraint install];                                   //install每个约束
     }
     [self.constraints removeAllObjects];
     return constraints;
@@ -50,6 +60,7 @@
 
 #pragma mark - MASConstraintDelegate
 
+//将constraints数组中的某些元素进行替换
 - (void)constraint:(MASConstraint *)constraint shouldBeReplacedWithConstraint:(MASConstraint *)replacementConstraint {
     NSUInteger index = [self.constraints indexOfObject:constraint];
     NSAssert(index != NSNotFound, @"Could not find constraint %@", constraint);
@@ -57,13 +68,17 @@
 }
 
 - (MASConstraint *)constraint:(MASConstraint *)constraint addConstraintWithLayoutAttribute:(NSLayoutAttribute)layoutAttribute {
-    
+    //创建ViewAttribute
     MASViewAttribute *viewAttribute = [[MASViewAttribute alloc] initWithView:self.view layoutAttribute:layoutAttribute];
+    
+    //根据ViewAttribute创建ViewConstraint
     MASViewConstraint *newConstraint = [[MASViewConstraint alloc] initWithFirstViewAttribute:viewAttribute];
     
+    //constraint不为nil是，就和newConstraint合并组合成MASCompositeConstraint对象
     if ([constraint isKindOfClass:MASViewConstraint.class]) {
         //replace with composite constraint
         NSArray *children = @[constraint, newConstraint];
+        
         MASCompositeConstraint *compositeConstraint = [[MASCompositeConstraint alloc] initWithChildren:children];
         compositeConstraint.delegate = self;
         [self constraint:constraint shouldBeReplacedWithConstraint:compositeConstraint];

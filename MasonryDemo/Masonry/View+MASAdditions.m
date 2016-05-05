@@ -20,34 +20,50 @@
  */
 
 //新建约束
-- (NSArray *)mas_makeConstraints:(void(^)(MASConstraintMaker *))block {
+- (NSArray *)mas_makeConstraints:(MASConstraintMakerConfigBlock)block {
+    //关闭自动添加约束，我们要手动添加
     self.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    //创建ConstraintMaker
     MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];
+    
+    //给maker中的各种成员属性赋值，通过Block进行值的回调，此处的Block就是钩取用户的数据的钩子（参考设计模式中的“好莱坞原则”）
     block(constraintMaker);
+    
+    //进行约束添加，并返回所Install的约束数组（Array<MASConstraint>）
     return [constraintMaker install];
 }
+
 
 //更新约束，updateExisting默认为NO, 更新约束时要设置为YES
 - (NSArray *)mas_updateConstraints:(void(^)(MASConstraintMaker *))block {
     self.translatesAutoresizingMaskIntoConstraints = NO;
+    
     MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];
     
+    //打开更新开关
     constraintMaker.updateExisting = YES;
     
     block(constraintMaker);
+    
     return [constraintMaker install];
 }
 
 //重新添加约束，removeExisting默认为NO, 重新添加约束时要设置成YES, 会将原来的约束进行移除并重新添加
 - (NSArray *)mas_remakeConstraints:(MASConstraintMakerConfigBlock)block {
     self.translatesAutoresizingMaskIntoConstraints = NO;
+    
     MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];
+    
+    //打开移除约束开关
     constraintMaker.removeExisting = YES;
+    
     block(constraintMaker);
+    
     return [constraintMaker install];
 }
 
-#pragma mark - NSLayoutAttribute properties
+#pragma mark - NSLayoutAttribute properties --- 成员属性的Get方法，创建MASViewAttribute对象
 
 - (MASViewAttribute *)mas_left {
     return [[MASViewAttribute alloc] initWithView:self layoutAttribute:NSLayoutAttributeLeft];
@@ -90,9 +106,14 @@
 }
 
 - (MASViewAttribute *)mas_baseline {
+    
     return [[MASViewAttribute alloc] initWithView:self layoutAttribute:NSLayoutAttributeBaseline];
+    
+    //你也可以调用这个方法
+    return self.mas_attribute(NSLayoutAttributeBaseline);
 }
 
+//创建你指定的NSLayoutAttribute，上面那些成员的初始化都可以调用下方的函数完成
 - (MASViewAttribute *(^)(NSLayoutAttribute))mas_attribute
 {
     return ^(NSLayoutAttribute attr) {
@@ -159,18 +180,19 @@
 
 #pragma mark - heirachy
 
+//寻找当前视图与参数中的视图的共同父视图，因为约束是添加在父视图上的
 - (instancetype)mas_closestCommonSuperview:(MAS_VIEW *)view {
-    MAS_VIEW *closestCommonSuperview = nil;
+    MAS_VIEW *closestCommonSuperview = nil;     //暂存父视图
 
     MAS_VIEW *secondViewSuperview = view;
     
-    while (!closestCommonSuperview && secondViewSuperview) {
+    while (!closestCommonSuperview && secondViewSuperview) {        //遍历secondView的所有父视图
         
         MAS_VIEW *firstViewSuperview = self;
         
-        while (!closestCommonSuperview && firstViewSuperview) {
+        while (!closestCommonSuperview && firstViewSuperview) {     //遍历当前视图的父视图
             if (secondViewSuperview == firstViewSuperview) {
-                closestCommonSuperview = secondViewSuperview;
+                closestCommonSuperview = secondViewSuperview;       //找到了共同的父视图就结束循环
             }
             firstViewSuperview = firstViewSuperview.superview;
         }
@@ -178,7 +200,7 @@
         secondViewSuperview = secondViewSuperview.superview;
     }
     
-    return closestCommonSuperview;
+    return closestCommonSuperview;                                   //返回共同的父视图
 }
 
 @end

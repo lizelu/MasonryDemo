@@ -37,8 +37,8 @@
     int padding = 10;
     
     NSArray *array = [greenView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.mas_top).offset(padding);
-        make.left.equalTo(self.mas_left).offset(padding);
+        make.top.equalTo(@10);                                                  //equalTo的参数可以是NSValue类型
+        make.left.equalTo(self).offset(padding);                                //equalTo的参数可以是View
         make.bottom.equalTo(blueView.mas_top).offset(-padding);
         make.right.equalTo(redView.mas_left).offset(-padding);
         make.width.equalTo(redView.mas_width);
@@ -50,13 +50,14 @@
     NSLog(@"%@", array);
     
     [redView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.mas_top).offset(padding);
+        
+        make.top.equalTo(self.mas_top).offset(padding);                         //equalTo的参数是MASViewAttribute
         make.left.equalTo(greenView.mas_right).offset(padding);
         make.right.equalTo(self.mas_right).offset(-padding);
         make.bottom.equalTo(blueView.mas_top).offset(-padding);
         make.width.equalTo(greenView.mas_width);
         
-        make.height.equalTo(@[greenView, blueView]);
+        make.height.equalTo(@[greenView, blueView]);                            //equalTo的参数为数组的情况
     }];
     
     [blueView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -67,6 +68,9 @@
         
         make.height.equalTo(@[greenView, redView]);
     }];
+    
+    //NSLog(@"%@, %@, %@", greenView.mas_key, redView.mas_key, blueView.mas_key);
+    NSLog(@"%@", [MASViewConstraint installedConstraintsForView:blueView]);
     
 }
 

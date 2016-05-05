@@ -23,6 +23,7 @@
 
 static char kInstalledConstraintsKey;
 
+//获取当前视图中所有已Install的约束并返回约束的集合
 - (NSMutableSet *)mas_installedConstraints {
     NSMutableSet *constraints = objc_getAssociatedObject(self, &kInstalledConstraintsKey);
     if (!constraints) {
@@ -39,10 +40,10 @@ static char kInstalledConstraintsKey;
 
 @property (nonatomic, strong, readwrite) MASViewAttribute *secondViewAttribute;
 @property (nonatomic, weak) MAS_VIEW *installedView;
-@property (nonatomic, weak) MASLayoutConstraint *layoutConstraint;
-@property (nonatomic, assign) NSLayoutRelation layoutRelation;
+@property (nonatomic, weak) MASLayoutConstraint *layoutConstraint;      //left, top, bottom等
+@property (nonatomic, assign) NSLayoutRelation layoutRelation;          //等于，大于等于，小于等于
 @property (nonatomic, assign) MASLayoutPriority layoutPriority;
-@property (nonatomic, assign) CGFloat layoutMultiplier;
+@property (nonatomic, assign) CGFloat layoutMultiplier;                 //倍数
 @property (nonatomic, assign) CGFloat layoutConstant;
 @property (nonatomic, assign) BOOL hasLayoutRelation;
 @property (nonatomic, strong) id mas_key;
@@ -98,10 +99,11 @@ static char kInstalledConstraintsKey;
 }
 
 - (void)setLayoutRelation:(NSLayoutRelation)layoutRelation {
-    _layoutRelation = layoutRelation;
-    self.hasLayoutRelation = YES;
+    _layoutRelation = layoutRelation;       //设置约束关系
+    self.hasLayoutRelation = YES;           //标记已设置约束关系
 }
 
+//判断是否可以使用“isActive”方法
 - (BOOL)supportsActiveProperty {
     return [self.layoutConstraint respondsToSelector:@selector(isActive)];
 }
@@ -170,14 +172,20 @@ static char kInstalledConstraintsKey;
 
 - (MASConstraint * (^)(id, NSLayoutRelation))equalToWithRelation {
     return ^id(id attribute, NSLayoutRelation relation) {
-        if ([attribute isKindOfClass:NSArray.class]) {      //为数组的情况
+        
+        if ([attribute isKindOfClass:NSArray.class]) {      //参数为数组的情况
+            
             NSAssert(!self.hasLayoutRelation, @"Redefinition of constraint relation");
+            
+            //将不变数组转换成可变数组
             NSMutableArray *children = NSMutableArray.new;
             for (id attr in attribute) {
                 MASViewConstraint *viewConstraint = [self copy];
-                viewConstraint.secondViewAttribute = attr;
+                viewConstraint.secondViewAttribute = attr;          //将数组中的元素转换成MASViewAttribute对象
                 [children addObject:viewConstraint];
             }
+            
+            //将数NSArray<MASViewAttribute>换成MASCompositeConstraint
             MASCompositeConstraint *compositeConstraint = [[MASCompositeConstraint alloc] initWithChildren:children];
             compositeConstraint.delegate = self.delegate;
             [self.delegate constraint:self shouldBeReplacedWithConstraint:compositeConstraint];
@@ -296,12 +304,18 @@ static char kInstalledConstraintsKey;
 }
 
 - (void)install {
+    //如果已经添加过约束，就return
     if (self.hasBeenInstalled) {
         return;
     }
     
+    //如果layoutConstraint可以使用“isActive”方法，并且self.layoutConstraint不为nil
     if ([self supportsActiveProperty] && self.layoutConstraint) {
+        
+        //激活约束
         self.layoutConstraint.active = YES;
+        
+        //将已激活的约束添加到当前View的已安装约束的数组中
         [self.firstViewAttribute.view.mas_installedConstraints addObject:self];
         return;
     }
@@ -364,7 +378,7 @@ static char kInstalledConstraintsKey;
         //添加约束
         [self.installedView addConstraint:layoutConstraint];
         self.layoutConstraint = layoutConstraint;
-        [firstLayoutItem.mas_installedConstraints addObject:self];
+        [firstLayoutItem.mas_installedConstraints addObject:self];      //约束所在的View增加被添加的约束
     }
 }
 

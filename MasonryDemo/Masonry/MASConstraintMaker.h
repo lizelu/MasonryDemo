@@ -145,6 +145,6 @@ typedef NS_OPTIONS(NSInteger, MASAttribute) {
 
 @end
 
-
+//回调配置成员属性的Block类型
 typedef void(^MASConstraintMakerConfigBlock)(MASConstraintMaker *make);
 

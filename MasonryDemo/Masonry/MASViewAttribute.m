@@ -31,6 +31,16 @@
         || self.layoutAttribute == NSLayoutAttributeHeight;
 }
 
+//
+//
+/**
+ *  重写的NSObject的isEqual方法，用来比较自定义的ViewAttribute对象是否相等
+ *  view和layoutAttributte成员属性相同就说明两个ViewAttribute对象相等
+ *
+ *  @param viewAttribute 要比较的viewAttribute
+ *
+ *  @return 返回的结果
+ */
 - (BOOL)isEqual:(MASViewAttribute *)viewAttribute {
     if ([viewAttribute isKindOfClass:self.class]) {
         return self.view == viewAttribute.view
@@ -39,6 +49,11 @@
     return [super isEqual:viewAttribute];
 }
 
+/**
+ *  为当前ViewAttribute生成hash值
+ *
+ *  @return 哈希值
+ */
 - (NSUInteger)hash {
     return MAS_NSUINTROTATE([self.view hash], MAS_NSUINT_BIT / 2) ^ self.layoutAttribute;
 }
