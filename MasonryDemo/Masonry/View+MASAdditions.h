@@ -10,8 +10,6 @@
 #import "MASConstraintMaker.h"
 #import "MASViewAttribute.h"
 
-typedef void(^MASConstraintMakerBlock)(MASConstraintMaker *make) ;
-
 /**
  *	Provides constraint maker block
  *  and convience methods for creating MASViewAttribute which are view + NSLayoutAttribute pairs
@@ -76,7 +74,7 @@ typedef void(^MASConstraintMakerBlock)(MASConstraintMaker *make) ;
  *
  *  @return Array of created MASConstraints
  */
-- (NSArray *)mas_makeConstraints:(void(^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_makeConstraints:(MASConstraintMakerConfigBlock)block;
 
 /**
  *  Creates a MASConstraintMaker with the callee view.
@@ -87,7 +85,7 @@ typedef void(^MASConstraintMakerBlock)(MASConstraintMaker *make) ;
  *
  *  @return Array of created/updated MASConstraints
  */
-- (NSArray *)mas_updateConstraints:(void(^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_updateConstraints:(MASConstraintMakerConfigBlock)block;
 
 /**
  *  Creates a MASConstraintMaker with the callee view.
@@ -98,6 +96,6 @@ typedef void(^MASConstraintMakerBlock)(MASConstraintMaker *make) ;
  *
  *  @return Array of created/updated MASConstraints
  */
-- (NSArray *)mas_remakeConstraints:(void(^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_remakeConstraints:(MASConstraintMakerConfigBlock)block;
 
 @end

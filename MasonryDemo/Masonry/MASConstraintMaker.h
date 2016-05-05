@@ -144,3 +144,7 @@ typedef NS_OPTIONS(NSInteger, MASAttribute) {
 - (MASConstraint * (^)(dispatch_block_t))group;
 
 @end
+
+
+typedef void(^MASConstraintMakerConfigBlock)(MASConstraintMaker *make);
+

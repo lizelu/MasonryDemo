@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, MASAxisType) {
  *
  *  @return Array of created MASConstraints
  */
-- (NSArray *)mas_makeConstraints:(void (^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_makeConstraints:(MASConstraintMakerConfigBlock)block;
 
 /**
  *  Creates a MASConstraintMaker with each view in the callee.
@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, MASAxisType) {
  *
  *  @return Array of created/updated MASConstraints
  */
-- (NSArray *)mas_updateConstraints:(void (^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_updateConstraints:(MASConstraintMakerConfigBlock)block;
 
 /**
  *  Creates a MASConstraintMaker with each view in the callee.
@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, MASAxisType) {
  *
  *  @return Array of created/updated MASConstraints
  */
-- (NSArray *)mas_remakeConstraints:(void (^)(MASConstraintMaker *make))block;
+- (NSArray *)mas_remakeConstraints:(MASConstraintMakerConfigBlock)block;
 
 /**
  *  distribute with fixed spacing

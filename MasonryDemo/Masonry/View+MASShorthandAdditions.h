@@ -49,9 +49,9 @@
 
 #endif
 
-- (NSArray *)makeConstraints:(void(^)(MASConstraintMaker *make))block;
-- (NSArray *)updateConstraints:(void(^)(MASConstraintMaker *make))block;
-- (NSArray *)remakeConstraints:(void(^)(MASConstraintMaker *make))block;
+- (NSArray *)makeConstraints:(MASConstraintMakerConfigBlock)block;
+- (NSArray *)updateConstraints:(MASConstraintMakerConfigBlock)block;
+- (NSArray *)remakeConstraints:(MASConstraintMakerConfigBlock)block;
 
 @end
 

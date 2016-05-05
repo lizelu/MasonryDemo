@@ -38,8 +38,8 @@
     return [constraintMaker install];
 }
 
-//重新添加约束
-- (NSArray *)mas_remakeConstraints:(void(^)(MASConstraintMaker *make))block {
+//重新添加约束，removeExisting默认为NO, 重新添加约束时要设置成YES, 会将原来的约束进行移除并重新添加
+- (NSArray *)mas_remakeConstraints:(MASConstraintMakerConfigBlock)block {
     self.translatesAutoresizingMaskIntoConstraints = NO;
     MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];
     constraintMaker.removeExisting = YES;
