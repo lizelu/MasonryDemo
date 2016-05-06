@@ -20,12 +20,12 @@
 /**
  *	First item/view and first attribute of the NSLayoutConstraint
  */
-@property (nonatomic, strong, readonly) MASViewAttribute *firstViewAttribute;
+@property (nonatomic, strong, readonly) MASViewAttribute *firstViewAttribute;   //当前视图要添加的属性
 
 /**
  *	Second item/view and second attribute of the NSLayoutConstraint
  */
-@property (nonatomic, strong, readonly) MASViewAttribute *secondViewAttribute;
+@property (nonatomic, strong, readonly) MASViewAttribute *secondViewAttribute; //相对于其他视图的视图属性
 
 /**
  *	initialises the MASViewConstraint with the first part of the equation

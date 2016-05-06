@@ -30,6 +30,19 @@
     //给maker中的各种成员属性赋值，通过Block进行值的回调，此处的Block就是钩取用户的数据的钩子（参考设计模式中的“好莱坞原则”）
     block(constraintMaker);
     
+    
+    
+//    make.top.equalTo(@10);                                                  //equalTo的参数可以是NSValue类型
+//    make.left.equalTo(self).offset(padding);                                //equalTo的参数可以是View
+//    make.bottom.equalTo(blueView.mas_top).offset(-padding);
+//    make.right.equalTo(redView.mas_left).offset(-padding);
+//    make.width.equalTo(redView.mas_width);
+//    
+//    make.height.equalTo(@[redView, blueView]);
+    
+    
+    
+    
     //进行约束添加，并返回所Install的约束数组（Array<MASConstraint>）
     return [constraintMaker install];
 }

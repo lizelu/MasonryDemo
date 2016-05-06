@@ -13,6 +13,14 @@
 #import "View+MASAdditions.h"
 #import <objc/runtime.h>
 
+
+
+
+
+/**
+ *  UIView+MASConstraints, 私有类目，只有MASConstraints类用到该类目
+ */
+
 @interface MAS_VIEW (MASConstraints)
 
 @property (nonatomic, readonly) NSMutableSet *mas_installedConstraints;
@@ -21,31 +29,51 @@
 
 @implementation MAS_VIEW (MASConstraints)
 
-static char kInstalledConstraintsKey;
-
-//获取当前视图中所有已Install的约束并返回约束的集合
+static char kInstalledConstraintsKey;       //动态添加属性的key, 用来表示动态添加的属性
+/**
+ *  通过运行时动态的添加或者获取约束集合（NSMutableSet constraints）
+ *
+ *  @return NSMutableSet类型的约束
+ */
 - (NSMutableSet *)mas_installedConstraints {
+    
+    //通过kInstalledConstraintsKey获取动态添加的已安装的约束集合
     NSMutableSet *constraints = objc_getAssociatedObject(self, &kInstalledConstraintsKey);
+    
+    //如果constants == nil, 说明未动态绑定该成员变量，就进行动态绑定
     if (!constraints) {
+        
         constraints = [NSMutableSet set];
+        
+        //动态为View添加已安装的约束集合(constraints)，并且为该成员指定唯一标示(kInstalledConstraintsKey)
+        //OBJC_ASSOCIATION_RETAIN_NONATOMIC == (strong, nonatomic)
         objc_setAssociatedObject(self, &kInstalledConstraintsKey, constraints, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
+    
     return constraints;
 }
 
 @end
 
 
+
+
+
+
+
+
+
+
 @interface MASViewConstraint ()
 
-@property (nonatomic, strong, readwrite) MASViewAttribute *secondViewAttribute;
-@property (nonatomic, weak) MAS_VIEW *installedView;
-@property (nonatomic, weak) MASLayoutConstraint *layoutConstraint;      //left, top, bottom等
-@property (nonatomic, assign) NSLayoutRelation layoutRelation;          //等于，大于等于，小于等于
-@property (nonatomic, assign) MASLayoutPriority layoutPriority;
-@property (nonatomic, assign) CGFloat layoutMultiplier;                 //倍数
-@property (nonatomic, assign) CGFloat layoutConstant;
-@property (nonatomic, assign) BOOL hasLayoutRelation;
+@property (nonatomic, strong, readwrite) MASViewAttribute *secondViewAttribute; //相对视图的约束
+@property (nonatomic, weak) MAS_VIEW *installedView;                            //布局约束所添加的视图
+@property (nonatomic, weak) MASLayoutConstraint *layoutConstraint;              //约束对象: left, top, bottom等
+@property (nonatomic, assign) NSLayoutRelation layoutRelation;                  //约束关系：=，>=，<=
+@property (nonatomic, assign) MASLayoutPriority layoutPriority;                 //约束的优先级：Low, High等
+@property (nonatomic, assign) CGFloat layoutMultiplier;                         //倍数
+@property (nonatomic, assign) CGFloat layoutConstant;                           //约束的值：top = 10（布局常量）
+@property (nonatomic, assign) BOOL hasLayoutRelation;                           //标记是否有布局关系
 @property (nonatomic, strong) id mas_key;
 @property (nonatomic, assign) BOOL useAnimator;
 
@@ -58,14 +86,20 @@ static char kInstalledConstraintsKey;
     if (!self) return nil;
     
     _firstViewAttribute = firstViewAttribute;
-    self.layoutPriority = MASLayoutPriorityRequired;
-    self.layoutMultiplier = 1;
+    self.layoutPriority = MASLayoutPriorityRequired;        //约束等级默认为“必须的”
+    self.layoutMultiplier = 1;                              //倍数默认为“1”
     
     return self;
 }
 
 #pragma mark - NSCoping
-
+/**
+ *  实现拷贝协议，支持MASViewConstraint对象的拷贝
+ *
+ *  @param zone
+ *
+ *  @return 拷贝后的MASViewConstraint对象
+ */
 - (id)copyWithZone:(NSZone __unused *)zone {
     MASViewConstraint *constraint = [[MASViewConstraint alloc] initWithFirstViewAttribute:self.firstViewAttribute];
     constraint.layoutConstant = self.layoutConstant;
@@ -77,13 +111,24 @@ static char kInstalledConstraintsKey;
 }
 
 #pragma mark - Public
-
+/**
+ *  获取传入View的所有被Install的约束
+ *
+ *  @param view 约束所安装的视图
+ *
+ *  @return NSArray<MASViewConstraint>
+ */
 + (NSArray *)installedConstraintsForView:(MAS_VIEW *)view {
     return [view.mas_installedConstraints allObjects];
 }
 
 #pragma mark - Private
 
+/**
+ *  布局常量（layoutConstant）的Setter方法
+ *
+ *  @param layoutConstant 布局常量的值
+ */
 - (void)setLayoutConstant:(CGFloat)layoutConstant {
     _layoutConstant = layoutConstant;
 
@@ -94,20 +139,42 @@ static char kInstalledConstraintsKey;
         self.layoutConstraint.constant = layoutConstant;
     }
 #else
+    //为成员变量-布局约束layoutConstraint设置constant值，该布局约束的值，类似于top.constant = 10;
     self.layoutConstraint.constant = layoutConstant;
 #endif
 }
 
+
+
+/**
+ *  设置布局关系
+ *
+ *  @param layoutRelation 
+ *  布局关系值
+ *      NSLayoutRelationEqual
+ *      NSLayoutRelationLessThanOrEqual
+ *      NSLayoutRelationGreaterThanOrEqual
+ *
+ */
 - (void)setLayoutRelation:(NSLayoutRelation)layoutRelation {
     _layoutRelation = layoutRelation;       //设置约束关系
     self.hasLayoutRelation = YES;           //标记已设置约束关系
 }
 
-//判断是否可以使用“isActive”方法
+/**
+ *  判断layoutConstraint是否可以使用“isActive”方法
+ *
+ *  @return <#return value description#>
+ */
 - (BOOL)supportsActiveProperty {
     return [self.layoutConstraint respondsToSelector:@selector(isActive)];
 }
 
+/**
+ *  判断布局是否被激活
+ *
+ *  @return 激活状态
+ */
 - (BOOL)isActive {
     BOOL active = YES;
     if ([self supportsActiveProperty]) {
@@ -117,10 +184,23 @@ static char kInstalledConstraintsKey;
     return active;
 }
 
+
+/**
+ *  判断布局是否被安装
+ *
+ *  @return 布尔值
+ */
 - (BOOL)hasBeenInstalled {
     return (self.layoutConstraint != nil) && [self isActive];
 }
 
+
+
+/**
+ *  成员属性secondViewAttribute的setter方法
+ *
+ *  @param secondViewAttribute
+ */
 - (void)setSecondViewAttribute:(id)secondViewAttribute {
     if ([secondViewAttribute isKindOfClass:NSValue.class]) {        //直接传过来的是Value
         [self setLayoutConstantWithValue:secondViewAttribute];
@@ -369,6 +449,7 @@ static char kInstalledConstraintsKey;
     if (self.updateExisting) {
         existingConstraint = [self layoutConstraintSimilarTo:layoutConstraint];
     }
+    
     if (existingConstraint) {
         // just update the constant
         //更新约束
@@ -378,6 +459,7 @@ static char kInstalledConstraintsKey;
         //添加约束
         [self.installedView addConstraint:layoutConstraint];
         self.layoutConstraint = layoutConstraint;
+        
         [firstLayoutItem.mas_installedConstraints addObject:self];      //约束所在的View增加被添加的约束
     }
 }

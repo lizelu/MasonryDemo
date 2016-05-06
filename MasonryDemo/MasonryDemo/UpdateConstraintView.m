@@ -65,7 +65,7 @@
     // 告诉约束需要更新
     [self setNeedsUpdateConstraints];
     
-    // 更新约束
+    // 强制更新更新约束（可以不加）
     [self updateConstraintsIfNeeded];
     
     [UIView animateWithDuration:0.4 animations:^{

@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Masonry/MASViewConstraint.m"
-            timestampString = "484136401.085139"
+            filePath = "MasonryDemo/UpdateConstraintView.m"
+            timestampString = "484212893.995903"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "322"
-            endingLineNumber = "322"
-            landmarkName = "-install"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

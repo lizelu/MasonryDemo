@@ -10,6 +10,14 @@
 
 @implementation MASViewAttribute
 
+/**
+ *  调用该方法时 view == item
+ *
+ *  @param view
+ *  @param layoutAttribute
+ *
+ *  @return
+ */
 - (id)initWithView:(MAS_VIEW *)view layoutAttribute:(NSLayoutAttribute)layoutAttribute {
     self = [self initWithView:view item:view layoutAttribute:layoutAttribute];
     return self;
@@ -50,7 +58,7 @@
 }
 
 /**
- *  为当前ViewAttribute生成hash值
+ *  为当前MASViewAttribute的对象生成hash值
  *
  *  @return 哈希值
  */

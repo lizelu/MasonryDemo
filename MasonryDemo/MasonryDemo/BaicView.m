@@ -43,30 +43,30 @@
         make.right.equalTo(redView.mas_left).offset(-padding);
         make.width.equalTo(redView.mas_width);
         
-        make.height.equalTo(redView.mas_height);
-        make.height.equalTo(blueView.mas_height);
+        make.height.equalTo(@[redView, blueView]);
+        //make.height.equalTo(blueView.mas_height);
     }];
     
     NSLog(@"%@", array);
     
     [redView mas_makeConstraints:^(MASConstraintMaker *make) {
         
-        make.top.equalTo(self.mas_top).offset(padding);                         //equalTo的参数是MASViewAttribute
+       // make.top.equalTo(self.mas_top).offset(padding);                         //equalTo的参数是MASViewAttribute
         make.left.equalTo(greenView.mas_right).offset(padding);
         make.right.equalTo(self.mas_right).offset(-padding);
         make.bottom.equalTo(blueView.mas_top).offset(-padding);
         make.width.equalTo(greenView.mas_width);
         
-        make.height.equalTo(@[greenView, blueView]);                            //equalTo的参数为数组的情况
+        //make.height.equalTo(@[greenView, blueView]);                            //equalTo的参数为数组的情况
     }];
     
     [blueView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(redView.mas_bottom).offset(padding);
+       // make.top.equalTo(redView.mas_bottom).offset(padding);
         make.left.equalTo(self.mas_left).offset(padding);
         make.right.equalTo(self.mas_right).offset(-padding);
         make.bottom.equalTo(self.mas_bottom).offset(-padding);
         
-        make.height.equalTo(@[greenView, redView]);
+        //make.height.equalTo(@[greenView, redView]);
     }];
     
     //NSLog(@"%@, %@, %@", greenView.mas_key, redView.mas_key, blueView.mas_key);
