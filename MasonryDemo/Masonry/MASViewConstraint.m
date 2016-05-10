@@ -293,7 +293,6 @@ static char kInstalledConstraintsKey;       //动态添加属性的key, 用来�
 
 - (MASConstraint *)addConstraintWithLayoutAttribute:(NSLayoutAttribute)layoutAttribute {
     NSAssert(!self.hasLayoutRelation, @"Attributes should be chained before defining the constraint relation");
-
     return [self.delegate constraint:self addConstraintWithLayoutAttribute:layoutAttribute];
 }
 
@@ -432,11 +431,9 @@ static char kInstalledConstraintsKey;       //动态添加属性的key, 用来�
     
     //寻找约束添加的View
     if (self.secondViewAttribute.view) {
-        
         //寻找两个视图的公共父视图
-        MAS_VIEW *closestCommonSuperview = [self.firstViewAttribute.view mas_closestCommonSuperview:self.secondViewAttribute.view];
-        
-        NSAssert(closestCommonSuperview,@"couldn't find a common superview for %@ and %@",self.firstViewAttribute.view, self.secondViewAttribute.view);
+        MAS_VIEW *closestCommonSuperview = [self.firstViewAttribute.view
+                                            mas_closestCommonSuperview:self.secondViewAttribute.view];
         self.installedView = closestCommonSuperview;
     } else if (self.firstViewAttribute.isSizeAttribute) {
         self.installedView = self.firstViewAttribute.view;
@@ -459,7 +456,6 @@ static char kInstalledConstraintsKey;       //动态添加属性的key, 用来�
         //添加约束
         [self.installedView addConstraint:layoutConstraint];
         self.layoutConstraint = layoutConstraint;
-        
         [firstLayoutItem.mas_installedConstraints addObject:self];      //约束所在的View增加被添加的约束
     }
 }

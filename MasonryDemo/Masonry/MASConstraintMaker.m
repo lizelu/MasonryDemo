@@ -37,7 +37,6 @@
     
     //如果是mas_remakeConstraint, 要先将该视图上的约束先uninstall
     if (self.removeExisting) {
-        
         //获取当前视图上添加的所有约束（NSArray<MSAConstraint>）
         NSArray *installedConstraints = [MASViewConstraint installedConstraintsForView:self.view];
         
@@ -73,7 +72,7 @@
     
     //根据ViewAttribute创建ViewConstraint
     MASViewConstraint *newConstraint = [[MASViewConstraint alloc] initWithFirstViewAttribute:viewAttribute];
-    
+
     //constraint不为nil是，就和newConstraint合并组合成MASCompositeConstraint对象
     if ([constraint isKindOfClass:MASViewConstraint.class]) {
         //replace with composite constraint
@@ -86,7 +85,7 @@
     }
     
     if (!constraint) {
-        newConstraint.delegate = self;              //设置代理-MASConstraintDelegate
+        newConstraint.delegate = self;              //设置代理-MASConstraintDelegate，为了MASViewConstraint也可以调用该方法
         [self.constraints addObject:newConstraint]; //添加进数组
     }
     return newConstraint;

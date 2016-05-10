@@ -72,6 +72,37 @@
     //NSLog(@"%@, %@, %@", greenView.mas_key, redView.mas_key, blueView.mas_key);
     NSLog(@"%@", [MASViewConstraint installedConstraintsForView:blueView]);
     
+    UIView *subView = [UIView new];
+    [self addSubview:subView];
+    UIView *superView = self;
+    
+    subView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint * constraint = [NSLayoutConstraint
+                                       constraintWithItem:subView               //subView
+                                       attribute:NSLayoutAttributeTop           //subView.top
+                                       relatedBy:NSLayoutRelationEqual          //subView.top =
+                                       toItem:superView                         //subView.top = superView
+                                       attribute:NSLayoutAttributeTop           //subView.top = superView.top
+                                       multiplier:1.0                           //subView.top = superView.top * 1
+                                       constant:10];                            //subView.top = superView.top * 1 + 10
+    [subView addConstraint:constraint];
+    
+    
+    
+    [subView mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.top.equalTo(@10); //subView.top = 10   //默认是相对于父视图，倍数为1
+        
+        //等价于
+        make.top.equalTo(superView.mas_top).offset(10);                         //subView.top = superView.top + 10
+        
+        //等价于
+        make.top.equalTo(superView.mas_top).multipliedBy(1).offset(10);         //subView.top = superView.top * 1 + 10
+        
+    }];
+    
+    
+    
 }
 
 @end

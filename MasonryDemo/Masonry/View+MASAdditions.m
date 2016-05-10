@@ -18,9 +18,11 @@
  *
  *  @return 被添加的约束数组（MASConstraint数组）
  */
+//MASConstraintMakerConfigBlock
 
-//新建约束
-- (NSArray *)mas_makeConstraints:(MASConstraintMakerConfigBlock)block {
+
+//新建约束并添加
+- (NSArray *)mas_makeConstraints:(void(^)(MASConstraintMaker *))block {
     //关闭自动添加约束，我们要手动添加
     self.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -30,23 +32,9 @@
     //给maker中的各种成员属性赋值，通过Block进行值的回调，此处的Block就是钩取用户的数据的钩子（参考设计模式中的“好莱坞原则”）
     block(constraintMaker);
     
-    
-    
-//    make.top.equalTo(@10);                                                  //equalTo的参数可以是NSValue类型
-//    make.left.equalTo(self).offset(padding);                                //equalTo的参数可以是View
-//    make.bottom.equalTo(blueView.mas_top).offset(-padding);
-//    make.right.equalTo(redView.mas_left).offset(-padding);
-//    make.width.equalTo(redView.mas_width);
-//    
-//    make.height.equalTo(@[redView, blueView]);
-    
-    
-    
-    
     //进行约束添加，并返回所Install的约束数组（Array<MASConstraint>）
     return [constraintMaker install];
 }
-
 
 //更新约束，updateExisting默认为NO, 更新约束时要设置为YES
 - (NSArray *)mas_updateConstraints:(void(^)(MASConstraintMaker *))block {
@@ -63,7 +51,7 @@
 }
 
 //重新添加约束，removeExisting默认为NO, 重新添加约束时要设置成YES, 会将原来的约束进行移除并重新添加
-- (NSArray *)mas_remakeConstraints:(MASConstraintMakerConfigBlock)block {
+- (NSArray *)mas_remakeConstraints:(void(^)(MASConstraintMaker *))block {
     self.translatesAutoresizingMaskIntoConstraints = NO;
     
     MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];
@@ -77,7 +65,6 @@
 }
 
 #pragma mark - NSLayoutAttribute properties --- 成员属性的Get方法，创建MASViewAttribute对象
-
 - (MASViewAttribute *)mas_left {
     return [[MASViewAttribute alloc] initWithView:self layoutAttribute:NSLayoutAttributeLeft];
 }
@@ -196,23 +183,18 @@
 //寻找当前视图与参数中的视图的共同父视图，因为约束是添加在父视图上的
 - (instancetype)mas_closestCommonSuperview:(MAS_VIEW *)view {
     MAS_VIEW *closestCommonSuperview = nil;     //暂存父视图
-
     MAS_VIEW *secondViewSuperview = view;
-    
     while (!closestCommonSuperview && secondViewSuperview) {        //遍历secondView的所有父视图
         
         MAS_VIEW *firstViewSuperview = self;
-        
         while (!closestCommonSuperview && firstViewSuperview) {     //遍历当前视图的父视图
             if (secondViewSuperview == firstViewSuperview) {
                 closestCommonSuperview = secondViewSuperview;       //找到了共同的父视图就结束循环
             }
             firstViewSuperview = firstViewSuperview.superview;
         }
-        
         secondViewSuperview = secondViewSuperview.superview;
     }
-    
     return closestCommonSuperview;                                   //返回共同的父视图
 }
 
